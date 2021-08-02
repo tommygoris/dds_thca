@@ -9,12 +9,9 @@ extern crate sdl2;
 use crate::data_source::HomeData;
 use crate::row_manager::RowManager;
 use sdl2::event::Event;
-use sdl2::image::{InitFlag, LoadTexture};
+use sdl2::image::InitFlag;
 use sdl2::keyboard::Keycode;
 use sdl2::pixels::Color;
-use sdl2::rect::Rect;
-use sdl2::render::{TextureCreator, WindowCanvas};
-use sdl2::ttf::Font;
 use std::time::Duration;
 
 static SCREEN_WIDTH: u32 = 1600;
@@ -40,7 +37,7 @@ pub fn main() -> Result<(), String> {
     let mut canvas = window.into_canvas().build().map_err(|e| e.to_string())?;
     let texture_creator = canvas.texture_creator();
 
-    let mut font = ttf_context.load_font("fonts/FiraSans-Bold.ttf", FONT_POINT_SIZE)?;
+    let font = ttf_context.load_font("fonts/FiraSans-Bold.ttf", FONT_POINT_SIZE)?;
     canvas.set_draw_color(BACKGROUND_COLOR);
     canvas.clear();
 

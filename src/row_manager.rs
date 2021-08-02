@@ -3,7 +3,7 @@ use sdl2::image::LoadTexture;
 use sdl2::keyboard::Keycode;
 use sdl2::pixels::Color;
 use sdl2::rect::Rect;
-use sdl2::render::{Texture, TextureCreator, TextureQuery, WindowCanvas};
+use sdl2::render::{Texture, TextureCreator, WindowCanvas};
 use sdl2::ttf::Font;
 use sdl2::video::WindowContext;
 use std::cmp::{max, min};
@@ -33,7 +33,6 @@ struct Row<'a> {
 
 /// Structure to handle the location of a texture and the texture itself.
 struct ImageTexture<'a> {
-    x_position: i32,
     y_position: i32,
     texture: Texture<'a>,
 }
@@ -79,19 +78,18 @@ impl RowManager<'b> {
             .map_err(|e| e.to_string())
             .unwrap();
 
-        let mut target = Rect::new(
+        let target = Rect::new(
             starting_x_position,
             starting_y_position,
             TEXT_WIDTH,
             TEXT_HEIGHT,
         );
-        canvas.copy(&font_texture, None, target);
+        let _ = canvas.copy(&font_texture, None, target);
 
         self.rows.push(Row {
             title_and_texture: (
                 title.parse().unwrap(),
                 ImageTexture {
-                    x_position: starting_x_position,
                     y_position: starting_y_position,
                     texture: font_texture,
                 },
@@ -178,15 +176,13 @@ impl RowManager<'b> {
         let starting_y_position =
             self.rows[(row_to_add_to - 1) as usize].y_position + PADDING_BETWEEN_TEXT_IMAGE;
 
-        let mut image_texture = texture_creator
+        let image_texture = texture_creator
             .load_texture_bytes(&*home_data.image())
             .unwrap();
 
         self.rows[(row_to_add_to - 1) as usize]
             .images
             .push(ImageTexture {
-                // x_position for the image is irrelevant
-                x_position: 0,
                 y_position: starting_y_position,
                 texture: image_texture,
             });
@@ -199,12 +195,12 @@ impl RowManager<'b> {
             dbg!(row.y_position);
             let target = Rect::new(row.x_position, row.y_position, TEXT_WIDTH, TEXT_HEIGHT);
 
-            canvas.copy(&row.title_and_texture.1.texture, None, target);
+            let _ = canvas.copy(&row.title_and_texture.1.texture, None, target);
             let mut is_image_in_row_scaled = false;
 
             for (num_image, image) in row.images.iter().enumerate() {
                 let mut x_position = PADDING_BETWEEN_IMAGES * (num_image as i32 + 1);
-                x_position += (num_image as i32 * IMAGE_WIDTH as i32);
+                x_position += num_image as i32 * IMAGE_WIDTH as i32;
 
                 if num_row as i32 == self.selected_row - 1
                     && num_image as i32 == self.selected_image - 1
@@ -220,7 +216,7 @@ impl RowManager<'b> {
                 }
 
                 let target = Rect::new(x_position, image.y_position, IMAGE_WIDTH, IMAGE_HEIGHT);
-                canvas.copy(&image.texture, None, target);
+                let _ = canvas.copy(&image.texture, None, target);
             }
         }
     }
@@ -254,6 +250,6 @@ impl RowManager<'b> {
             SCALED_IMAGE_HEIGHT,
         );
 
-        canvas.copy(&selected_image.texture, None, target);
+        let _ = canvas.copy(&selected_image.texture, None, target);
     }
 }
